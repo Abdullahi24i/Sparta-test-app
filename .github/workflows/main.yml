@@ -1,0 +1,52 @@
+name: Node.js CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build App
+        run: npm run build
+
+      - name: Run Tests
+        run: npm test
+
+      - name: Upload Test Results (optional)
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: test-results/
+
+  update-badge:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update README with CI Badge
+        run: |
+          echo "![CI](https://github.com/Abdullahi24i/Sparta-test-app/actions/workflows/ci.yml/badge.svg)" > README.md
+      - name: Commit and Push README
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add README.md
+          git commit -m 'Add CI badge to README' || echo "No changes to commit"
+          git push
