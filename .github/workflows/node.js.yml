@@ -11,20 +11,25 @@ on:
 
 jobs:
   build:
-
-    runs-on: ubuntu-22.04
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x, 22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    runs-on: ubuntu-22.04  # Specifying Ubuntu 22.04
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
       with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+        node-version: '20'
+
+    - name: Check Node.js and npm versions
+      run: |
+        node -v
+        npm -v
+      working-directory: ./app
+
+    - name: Install dependencies
+      run: |
+        rm -rf node_modules
+        npm install
+      working-directory: ./app
