@@ -21,14 +21,25 @@ jobs:
         with:
           node-version: 18
 
+      - name: Verify package.json exists
+        run: |
+          if [ ! -f package.json ]; then
+            echo "Error: package.json not found!"
+            exit 1
+          fi
+
       - name: Install dependencies
-        run: npm install --legacy-peer-deps  # Use this if dependencies are conflicting
+        run: |
+          npm install || { echo "npm install failed"; exit 1; }
 
       - name: Build the app
-        run: npm run build
+        run: |
+          npm run build || { echo "Build failed"; exit 1; }
 
       - name: Run tests
-        run: npm test
+        run: |
+          npm test || { echo "Tests failed"; exit 1; }
+
 
 
  
